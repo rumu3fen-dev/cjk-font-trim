@@ -4,7 +4,7 @@
 //
 // usage: node collect.js <config.json>
 //   { "site": "dist", "pages": ["/", "/about/"], "families": ["Noto Sans SC", "Noto Serif SC"],
-//     "topExclude": "figure,.demo", "chrome": false }
+//     "topPages": ["/"], "topExclude": "figure,.demo", "chrome": false }
 const fs = require('fs');
 const path = require('path');
 const { chromium } = require('playwright');
@@ -35,7 +35,8 @@ const TYPES = {
       const page = await ctx.newPage();
       await page.goto(ORIGIN + p, { waitUntil: 'load' });
       await page.waitForTimeout(300);
-      const r = await page.evaluate(({ families, topExclude }) => {
+      const wantTop = (cfg.topPages || []).includes(p);
+      const r = await page.evaluate(({ families, topExclude, wantTop }) => {
         const all = {}, top = {};
         const norm = s => s.trim().replace(/^["']|["']$/g, '').toLowerCase();
         const wanted = families.map(norm);
@@ -50,13 +51,13 @@ const TYPES = {
           if (!fam) continue;
           const key = families[wanted.indexOf(fam)] + '|' + s.fontWeight;
           all[key] = (all[key] || '') + n.data;
-          if (topExclude && el.closest(topExclude)) continue;
+          if (!wantTop || (topExclude && el.closest(topExclude))) continue;
           range.selectNodeContents(n);
           const b = range.getBoundingClientRect();
           if (b.height > 0 && b.top < innerHeight && b.bottom > 0) top[key] = (top[key] || '') + n.data;
         }
         return { all, top };
-      }, { families: cfg.families, topExclude: cfg.topExclude || '' });
+      }, { families: cfg.families, topExclude: cfg.topExclude || '', wantTop });
       for (const part of ['all', 'top']) for (const [k, v] of Object.entries(r[part])) out[part][k] = (out[part][k] || '') + v;
       await page.close();
     }

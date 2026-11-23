@@ -74,6 +74,9 @@ def main():
     ap.add_argument('--out', required=True, type=pathlib.Path, help='where to write the .woff2 files and fonts.css')
     ap.add_argument('--url', default='/fonts/', help='URL prefix the browser loads the fonts from (default /fonts/)')
     ap.add_argument('--pages', nargs='*', help='page paths to scan, like / /about/ (default: every .html file in --site)')
+    ap.add_argument('--top-pages', nargs='*', metavar='PATH',
+                    help='pages whose first screen goes into the small *-top files (default: / if scanned, else the first page). '
+                         'Every other page still counts toward the full files.')
     ap.add_argument('--top-exclude', default='', metavar='SELECTOR',
                     help='CSS selector for first-screen text that may wait for the full font (e.g. animated demos)')
     ap.add_argument('--chrome', action='store_true', help='use the installed Google Chrome instead of Playwright Chromium')
@@ -84,11 +87,12 @@ def main():
         family, weight, file = parse_font(spec)
         fonts.setdefault(family, {})[weight] = file
     pages = a.pages or find_pages(a.site)
-    print(f'scanning {len(pages)} page(s) for {", ".join(fonts)} …', file=sys.stderr)
+    top_pages = a.top_pages if a.top_pages is not None else (['/'] if '/' in pages else pages[:1])
+    print(f'scanning {len(pages)} page(s) for {", ".join(fonts)}; first screen from {" ".join(top_pages) or "(none)"} …', file=sys.stderr)
 
     with tempfile.NamedTemporaryFile('w', suffix='.json', delete=False) as cfg:
         json.dump({'site': str(a.site.resolve()), 'pages': pages, 'families': list(fonts),
-                   'topExclude': a.top_exclude, 'chrome': a.chrome}, cfg)
+                   'topPages': top_pages, 'topExclude': a.top_exclude, 'chrome': a.chrome}, cfg)
     try:
         res = subprocess.run(['node', str(HERE / 'collect.js'), cfg.name], check=True, capture_output=True, text=True, cwd=HERE)
     except subprocess.CalledProcessError as e:

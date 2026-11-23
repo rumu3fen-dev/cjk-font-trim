@@ -1,75 +1,141 @@
-# cjk-font-trim
+<h1 align="center">cjk-font-trim</h1>
 
-Subset Chinese / Japanese / Korean web fonts to **the characters your static site actually shows**, and split out a tiny **first-screen** file so headings render in the right font almost immediately.
+<p align="center">
+  <b>Self-host Chinese, Japanese and Korean web fonts at a few hundred KB instead of 20 MB.</b><br>
+  Trim each font to the characters your static site actually shows, and load the first screen first.
+</p>
 
-A full CJK font is 16–25 MB per weight. A typical page shows a few hundred distinct characters. This tool opens every page of your built site in a real browser, records which characters are displayed in which font and weight, and writes trimmed `.woff2` files plus the `@font-face` CSS.
+<p align="center">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-2B3BFF"></a>
+  <img alt="Python 3.9+" src="https://img.shields.io/badge/python-3.9%2B-16171B">
+  <img alt="Node 18+" src="https://img.shields.io/badge/node-18%2B-16171B">
+  <img alt="Fonts: woff2" src="https://img.shields.io/badge/output-woff2%20%2B%20CSS-16171B">
+</p>
 
+<p align="center"><b>English</b> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.ja.md">日本語</a></p>
+
+<p align="center"><img src="docs/hero.svg" alt="82.0 MB of source fonts trimmed to 818 KB; 62 KB loaded first" width="900"></p>
+
+## The problem
+
+A Latin web font is 20–50 KB. A CJK font has tens of thousands of glyphs and weighs **16–25 MB per weight**. Your options are usually all bad:
+
+- **Ship the whole font**: nobody waits for 20 MB.
+- **Use Google Fonts**: it slices each weight into ~100 `unicode-range` chunks, so a page fires dozens of font requests. And it is blocked in mainland China.
+- **Give up and use system fonts**: your carefully chosen typeface only shows up on the designer's machine.
+
+But a typical page only shows a few hundred distinct characters, and a whole marketing site often stays under 2,000.
+
+## What cjk-font-trim does
+
+1. **Opens every page of your built site in a real browser**, at desktop and phone width, with JavaScript running.
+2. **Reads the computed font of every text node**, so it knows which characters appear in which family *and* which weight. Nothing hidden, nothing from the HTML source that never renders.
+3. **Writes two `.woff2` files per family/weight**: a tiny **first-screen** file with only what is visible on load, and a second file with everything else.
+4. **Writes `fonts.css`**: the first-screen file is declared last with `unicode-range`, so the browser fetches ~10–50 KB before it can paint your hero in the right font, and loads the rest after.
+
+<p align="center"><img src="docs/how-it-works.svg" alt="Built site → real browser at two widths → characters per family and weight → woff2 files and fonts.css" width="900"></p>
+
+## When to use it
+
+**Good fit**
+
+- Static or pre-rendered sites: marketing sites, portfolios, docs, blogs, landing pages (Astro, Next.js export, Hugo, Eleventy, Vite, hand-written HTML)
+- You want a specific CJK typeface (Noto Serif, Source Han, a licensed brand font) to show up for every visitor
+- Your audience includes mainland China, where Google Fonts is not reachable
+- Multilingual sites: run once per language
+
+**Not a fit**
+
+- Text you don't know at build time: comments, user names, search boxes, CMS content edited after deploy. Characters outside the subset fall back to the next font in your stack. For that, split the whole font into ordered chunks with [cn-font-split](https://github.com/KonghaYao/cn-font-split) instead.
+- Fonts whose license forbids subsetting or self-hosting. (Noto CJK, Source Han and most OFL fonts allow both.)
+
+## Quick start
+
+```bash
+git clone https://github.com/rumu3fen-dev/cjk-font-trim && cd cjk-font-trim
+pip install -r requirements.txt    # fontTools + brotli
+npm install                        # Playwright
+npx playwright install chromium    # or add --chrome to use your installed Google Chrome
 ```
-4 source fonts (Noto Sans/Serif SC, 4 weights)   82.0 MB
-after cjk-font-trim, 3 pages                      0.75 MB
-  of which first-screen files                     0.12 MB
-```
 
-## Why not just subset by text?
+Build your site, then point the tool at the output folder and your source fonts:
 
-Static subsetting tools usually read the HTML source. That misses text inserted by scripts, counts text that is never shown (hidden menus, `aria-hidden` decorations), and can't tell which weight a character is rendered in. Rendering the page in a browser answers all three: `getComputedStyle()` gives the real family and weight for every text node.
-
-It also checks what is visible **in the first viewport** (desktop 1440×900 and phone 390×844). Those characters go into a separate small file, declared last with `unicode-range`, so the browser fetches ~20–80 KB before it can paint the hero in the right font, and loads the rest afterwards.
-
-## Install
-
-```
-pip install -r requirements.txt     # fonttools + brotli
-npm install                         # playwright
-npx playwright install chromium     # or pass --chrome to use your installed Google Chrome
-```
-
-## Use
-
-Build your site first, then:
-
-```
-python3 cjk_font_trim.py --site dist --out dist/fonts --url /fonts/ \
+```bash
+python3 cjk_font_trim.py --site ../my-site/dist --out ../my-site/dist/fonts --url /fonts/ \
   --font "Noto Sans SC:400=fonts/NotoSansCJKsc-Regular.otf" \
-  --font "Noto Sans SC:500=fonts/NotoSansCJKsc-Medium.otf" \
+  --font "Noto Sans SC:700=fonts/NotoSansCJKsc-Bold.otf" \
   --font "Noto Serif SC:300=fonts/NotoSerifCJKsc-Light.otf"
 ```
 
-- `--font "FAMILY:WEIGHT=FILE"`: one per family and weight. `FAMILY` is the name your CSS uses in `font-family`; it can appear anywhere in the font stack (`"Source Serif 4","Noto Serif SC",serif` works).
-- `--pages / /about/`: limit the scan; default is every `.html` file in `--site`.
-- `--top-exclude "figure,.demo"`: first-screen text that can wait for the full font (animations, screenshots, long paragraphs). Keeps the first-screen file small.
-- Computed weights are folded into the nearest weight you supplied (a `450` lands on `400` or `500`).
-
-Output in `--out`:
-
-| file | contains |
-|---|---|
-| `<family>-<weight>.woff2` | every character the pages show in that family/weight, plus ASCII and common CJK punctuation |
-| `<family>-<weight>-top.woff2` | only the first-screen characters |
-| `fonts.css` | `@font-face` rules: full files first, first-screen files last with `unicode-range` |
-
-Replace your existing `@font-face` rules with `fonts.css`, and preload the first-screen files:
-
-```html
-<link rel="preload" href="/fonts/noto-serif-sc-300-top.woff2" as="font" type="font/woff2" crossorigin>
+```
+scanning 20 page(s) for Noto Sans SC, Noto Serif SC; first screen from / …
+  Noto Sans SC 400: 990 chars → noto-sans-sc-400.woff2 269 KB + noto-sans-sc-400-top.woff2 45 KB (151 first-screen chars)
+  Noto Sans SC 500: 379 chars → noto-sans-sc-500.woff2 140 KB
+  Noto Serif SC 300: 219 chars → noto-serif-sc-300.woff2 140 KB + noto-serif-sc-300-top.woff2 6 KB (10 first-screen chars)
+  Noto Serif SC 400: 377 chars → noto-serif-sc-400.woff2 206 KB + noto-serif-sc-400-top.woff2 11 KB (27 first-screen chars)
+done: 818 KB of fonts
 ```
 
-Run it again whenever the text changes (it's fast enough to put in the build).
+Then replace your `@font-face` rules with the generated `fonts.css` and preload the first-screen files:
 
-## Multilingual sites
+```html
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="preload" href="/fonts/noto-sans-sc-400-top.woff2" as="font" type="font/woff2" crossorigin>
+```
 
-Run once per language with that language's pages and output folder. Pan-CJK fonts such as Noto CJK switch glyph shapes by `<html lang>` through the OpenType `locl` feature; the tool keeps all layout features, so the same source font serves Simplified Chinese, Traditional Chinese and Japanese pages correctly.
+Keep your CSS as it is: `font-family: "Noto Sans SC", sans-serif` now resolves to the trimmed files. Run the tool again whenever the text changes; it is quick enough to be the last step of your build.
 
-## Notes
+## Options
 
-- Requires Python 3.9+, Node 18+.
-- Pages are served straight from the build folder; all external requests (web fonts, analytics) are blocked during the scan.
-- Characters that only appear after user interaction (opening a menu, a later step of a form) are counted if they are in the DOM when the page has loaded. Text fetched later at runtime is not; add those pages or states yourself, or rely on the font stack's fallback.
+| option | meaning |
+|---|---|
+| `--site DIR` | built site folder (required) |
+| `--font "FAMILY:WEIGHT=FILE"` | one per family and weight (required, repeatable). `FAMILY` is the name used in your CSS; it can be anywhere in the font stack. `.otf`, `.ttf`, `.woff2` all work |
+| `--out DIR` | where to write the `.woff2` files and `fonts.css` (required) |
+| `--url PREFIX` | URL the browser loads the fonts from (default `/fonts/`) |
+| `--pages / /about/ …` | pages to scan (default: every `.html` file in `--site`) |
+| `--top-pages / …` | pages whose first screen goes into the small `*-top` files (default: `/` if scanned, else the first page). Every scanned page still counts toward the full files |
+| `--top-exclude "figure,.demo"` | first-screen elements that can wait for the full file (animations, long paragraphs), to keep `*-top` small |
+| `--chrome` | use your installed Google Chrome instead of Playwright's Chromium |
 
-## 中文说明
+Computed weights are folded into the nearest weight you supplied, so a `font-weight: 450` lands on `400` or `500`.
 
-把中日韩网页字体裁成「网站真正显示的字」，并把打开页面第一屏看得见的字单独拆成一个很小的文件，先下载、先显示。完整的中文字体每个字重 16–25 MB，裁完通常只剩几十到几百 KB。用浏览器真实渲染每个页面来统计，脚本插入的字、真正用到的字重都算得准。用法见上文。
+## Compared with other tools
+
+All of these are good tools; they solve neighbouring problems.
+
+| tool | how it finds characters | best for |
+|---|---|---|
+| **cjk-font-trim** | renders built pages in a browser, desktop + phone | static CJK sites that want per-weight files and a separate first-screen file |
+| [glyphhanger](https://github.com/zachleat/glyphhanger) | crawls URLs in a headless browser | analysing `unicode-range` usage and subsetting any font, especially Latin |
+| [subfont](https://github.com/Munter/subfont) | traces fonts through your HTML/CSS and rewrites them | a build step that also self-hosts Google Fonts and injects preloads |
+| [font-spider 字蛛](https://github.com/aui/font-spider) | static analysis of local HTML and CSS | Chinese pages whose text is all in the HTML source |
+| [cn-font-split](https://github.com/KonghaYao/cn-font-split) | doesn't: splits the whole font into ordered chunks | text unknown at build time; any character still works |
+
+None of the others split out a separate first-screen file, which is what makes the hero render in the right font almost immediately.
+
+## FAQ
+
+**Japanese, Korean, Traditional Chinese?** Yes. Pass the matching fonts (`Noto Sans JP`, `Noto Sans KR`, `Noto Sans TC`…). Pan-CJK fonts such as Noto Sans CJK switch glyph shapes by `<html lang>` through OpenType `locl`; all layout features are kept, so one source font can serve several languages. For multilingual sites, run once per language with that language's pages and output folder.
+
+**What happens to a character that isn't in the subset?** The browser uses the next font in your `font-family` stack for that character. ASCII and common CJK punctuation are always included.
+
+**Text that appears after a click (menus, tabs, the next step of a form)?** It's counted if it is in the DOM when the page has loaded, even if hidden. Text fetched later from an API is not.
+
+**Does it upload my site or fonts anywhere?** No. Pages are served from your disk inside the browser, and every external request is blocked during the scan.
+
+**Variable fonts?** Not tested yet. Static weights are the supported case.
+
+## Used by
+
+- [rumu3fen.com](https://rumu3fen.com/en/): four languages (Simplified and Traditional Chinese, Japanese, English) from one set of Noto CJK fonts.
+
+Using it somewhere? Open an issue or PR to add your site.
+
+## Contributing
+
+Issues and pull requests are welcome. The whole tool is two files: `collect.js` (browser scan, prints JSON) and `cjk_font_trim.py` (CLI, subsetting, CSS).
 
 ## License
 
-MIT. Built by [入木 INGRAIN](https://rumu3fen.com/en/) for [rumu3fen.com](https://rumu3fen.com/), which uses it to serve four languages from one set of Noto CJK fonts.
+[MIT](LICENSE) © INGRAIN. Made by [入木 INGRAIN](https://rumu3fen.com/en/), who build business systems and data platforms.

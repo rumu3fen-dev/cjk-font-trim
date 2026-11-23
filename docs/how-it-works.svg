@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif">
+  <rect width="1200" height="300" rx="16" fill="#FAF9F6"/>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#2B3BFF"/></marker></defs>
+  <g font-size="16" fill="#16171B">
+    <rect x="40" y="70" width="230" height="150" rx="10" fill="#fff" stroke="#e1dfd8"/>
+    <text x="64" y="106" font-weight="600" font-size="18">1. Your built site</text>
+    <text x="64" y="138" fill="#4a4c55">dist/**/*.html</text>
+    <text x="64" y="164" fill="#4a4c55">served from disk,</text>
+    <text x="64" y="188" fill="#4a4c55">external requests blocked</text>
+
+    <rect x="330" y="70" width="250" height="150" rx="10" fill="#fff" stroke="#e1dfd8"/>
+    <text x="354" y="106" font-weight="600" font-size="18">2. Real browser</text>
+    <text x="354" y="138" fill="#4a4c55">desktop 1440 × 900</text>
+    <text x="354" y="164" fill="#4a4c55">phone 390 × 844</text>
+    <text x="354" y="188" fill="#4a4c55">JavaScript runs</text>
+
+    <rect x="640" y="70" width="250" height="150" rx="10" fill="#fff" stroke="#e1dfd8"/>
+    <text x="664" y="106" font-weight="600" font-size="18">3. Every text node</text>
+    <text x="664" y="138" fill="#4a4c55">computed family + weight</text>
+    <text x="664" y="164" fill="#4a4c55">all characters shown</text>
+    <text x="664" y="188" fill="#4a4c55">+ first-screen characters</text>
+
+    <rect x="950" y="70" width="210" height="150" rx="10" fill="#fff" stroke="#2B3BFF" stroke-width="1.5"/>
+    <text x="974" y="106" font-weight="600" font-size="18">4. Output</text>
+    <text x="974" y="138" fill="#4a4c55">*-top.woff2  (tiny)</text>
+    <text x="974" y="164" fill="#4a4c55">*.woff2  (the rest)</text>
+    <text x="974" y="188" fill="#4a4c55">fonts.css</text>
+  </g>
+  <g stroke="#2B3BFF" stroke-width="2" marker-end="url(#a)"><line x1="274" y1="145" x2="324" y2="145"/><line x1="584" y1="145" x2="634" y2="145"/><line x1="894" y1="145" x2="944" y2="145"/></g>
+  <text x="40" y="262" font-size="14" fill="#9a9ca3">Subsetting by fontTools; all OpenType layout features kept, so Pan-CJK fonts still switch glyphs by &lt;html lang&gt;.</text>
+</svg>
