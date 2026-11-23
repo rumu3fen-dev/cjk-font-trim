@@ -1,0 +1,4 @@
+node_modules/
+__pycache__/
+*.woff2
+example/out/

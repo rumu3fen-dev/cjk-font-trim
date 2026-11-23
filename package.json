@@ -1,0 +1,9 @@
+{
+  "name": "cjk-font-trim",
+  "private": true,
+  "description": "Subset CJK web fonts to the characters your static site actually shows, with a tiny first-screen file.",
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.49.0"
+  }
+}
