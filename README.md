@@ -141,6 +141,14 @@ None of the others split out a separate first-screen file, which is what makes t
 
 Using it somewhere? Open an issue or PR to add your site.
 
+## Write-ups
+
+How it works and the mistakes we made on the way:
+
+- [Chinese web fonts are 20 MB each. Here's how we paint the first screen with 62 KB](https://dev.to/rumu3fen/chinese-web-fonts-are-20-mb-each-heres-how-we-paint-the-first-screen-with-62-kb-4hdo) (English, DEV)
+- [中文网页字体动辄 20 MB，我们把首屏压到了 62 KB](https://juejin.cn/post/7711033019448852530) (Chinese, Juejin)
+- [和文Webフォントを20MBから62KBへ：実ブラウザで「表示されている文字」を数えてサブセット化する](https://zenn.dev/rumu3fen/articles/95f03665fc85d1) (Japanese, Zenn)
+
 ## Contributing
 
 Issues and pull requests are welcome. The whole tool is two files: `collect.js` (browser scan, prints JSON) and `cjk_font_trim.py` (CLI, subsetting, CSS).

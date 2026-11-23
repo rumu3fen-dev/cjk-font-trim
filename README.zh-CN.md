@@ -141,6 +141,14 @@ done: 818 KB of fonts (source: 82.0 MB), rules in ../my-site/dist/fonts/fonts.cs
 
 你也在用？欢迎提 issue 或 PR 把你的网站加进来。
 
+## 相关文章
+
+讲原理和踩过的坑：
+
+- [中文网页字体动辄 20 MB，我们把首屏压到了 62 KB](https://juejin.cn/post/7711033019448852530)（中文，掘金）
+- [Chinese web fonts are 20 MB each. Here's how we paint the first screen with 62 KB](https://dev.to/rumu3fen/chinese-web-fonts-are-20-mb-each-heres-how-we-paint-the-first-screen-with-62-kb-4hdo)（英文，DEV）
+- [和文Webフォントを20MBから62KBへ：実ブラウザで「表示されている文字」を数えてサブセット化する](https://zenn.dev/rumu3fen/articles/95f03665fc85d1)（日文，Zenn）
+
 ## 参与贡献
 
 欢迎提 issue 和 PR。整个工具只有两个文件：`collect.js`（浏览器扫描，输出 JSON）和 `cjk_font_trim.py`（命令行、裁剪、生成 CSS）。

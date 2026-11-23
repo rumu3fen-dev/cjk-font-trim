@@ -129,6 +129,14 @@ CSS はそのままで構いません。`font-family: "Noto Sans JP", sans-serif
 
 お使いのサイトがあれば、issue か PR で教えてください。
 
+## 解説記事
+
+仕組みとハマった点：
+
+- [和文Webフォントを20MBから62KBへ：実ブラウザで「表示されている文字」を数えてサブセット化する](https://zenn.dev/rumu3fen/articles/95f03665fc85d1)（日本語、Zenn）
+- [Chinese web fonts are 20 MB each. Here's how we paint the first screen with 62 KB](https://dev.to/rumu3fen/chinese-web-fonts-are-20-mb-each-heres-how-we-paint-the-first-screen-with-62-kb-4hdo)（英語、DEV）
+- [中文网页字体动辄 20 MB，我们把首屏压到了 62 KB](https://juejin.cn/post/7711033019448852530)（中国語、掘金）
+
 ## コントリビュート
 
 issue と pull request を歓迎します。ツール本体は `collect.js`（ブラウザでのスキャン、JSON を出力）と `cjk_font_trim.py`（CLI、サブセット化、CSS 生成）の 2 ファイルだけです。
