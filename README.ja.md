@@ -14,7 +14,7 @@
 
 <p align="center"><a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <b>日本語</b></p>
 
-<p align="center"><img src="docs/hero.svg" alt="元のフォント 4 ファイル 82.0 MB を 818 KB に。先に読み込むのは 62 KB" width="900"></p>
+<p align="center"><img src="docs/demo-load.gif" alt="同じ中国語ページを並べて読み込み：フォントをそのまま配信すると正しい書体になるまで 7.2 秒、サブセット化すると 0.2 秒" width="900"><br><sub>同じページ・同じ帯域制限（Chrome、20 Mbps）。左は LXGW WenKai（霞鹜文楷）をそのまま配信（17.3 MB）、右は cjk-font-trim の出力。読み込み時間は実測で、最終的な表示はピクセル単位で同一です。</sub></p>
 
 ## 課題
 
@@ -25,6 +25,8 @@
 - **システムフォントで妥協する**：選び抜いた書体が、デザイナーの PC でしか表示されません。
 
 一方で、1 ページに実際に表示される文字は数百字程度、コーポレートサイト全体でも 2,000 字に収まることがよくあります。
+
+<p align="center"><img src="docs/hero.svg" alt="元のフォント 4 ファイル 82.0 MB を 818 KB に。先に読み込むのは 62 KB" width="900"></p>
 
 ## できること
 
@@ -57,6 +59,10 @@ pip install -r requirements.txt    # fontTools + brotli
 npm install                        # Playwright
 npx playwright install chromium    # またはインストール済みの Google Chrome を使う場合は --chrome
 ```
+
+まずは同梱の 1 ページの[サンプル](example/)で試せます。
+
+<p align="center"><img src="docs/demo-cli.gif" alt="ターミナル：cjk-font-trim が 52.3 MB の LXGW WenKai をサンプルページ用の 84 KB に" width="820"></p>
 
 サイトをビルドしてから、出力フォルダと元のフォントを指定します。
 

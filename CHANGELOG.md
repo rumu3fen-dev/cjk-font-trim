@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- The summary line now shows the size of the source fonts, and each first-screen file is printed on its own line.
+- README: recorded side-by-side load comparison and a terminal demo; the bundled example now uses LXGW WenKai.
+
 ## 0.1.0 (2026-11-23)
 
 First public release.

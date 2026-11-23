@@ -14,7 +14,7 @@
 
 <p align="center"><b>English</b> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.ja.md">日本語</a></p>
 
-<p align="center"><img src="docs/hero.svg" alt="82.0 MB of source fonts trimmed to 818 KB; 62 KB loaded first" width="900"></p>
+<p align="center"><img src="docs/demo-load.gif" alt="Side-by-side load of the same Chinese page: the full font files take 7.2 s to show the right typeface, the trimmed files take 0.2 s" width="900"><br><sub>Same page, same throttled connection (Chrome, 20 Mbps). Left: the full LXGW WenKai files, 17.3 MB. Right: cjk-font-trim output. Recorded load times; the final renders are pixel-identical.</sub></p>
 
 ## The problem
 
@@ -25,6 +25,8 @@ A Latin web font is 20–50 KB. A CJK font has tens of thousands of glyphs and w
 - **Give up and use system fonts**: your carefully chosen typeface only shows up on the designer's machine.
 
 But a typical page only shows a few hundred distinct characters, and a whole marketing site often stays under 2,000.
+
+<p align="center"><img src="docs/hero.svg" alt="82.0 MB of source fonts trimmed to 818 KB; 62 KB loaded first" width="900"></p>
 
 ## What cjk-font-trim does
 
@@ -58,6 +60,10 @@ npm install                        # Playwright
 npx playwright install chromium    # or add --chrome to use your installed Google Chrome
 ```
 
+Try it on the bundled one-page [example](example/) first:
+
+<p align="center"><img src="docs/demo-cli.gif" alt="Terminal: cjk-font-trim turns 52.3 MB of LXGW WenKai into 84 KB for the example page" width="820"></p>
+
 Build your site, then point the tool at the output folder and your source fonts:
 
 ```bash
@@ -69,11 +75,14 @@ python3 cjk_font_trim.py --site ../my-site/dist --out ../my-site/dist/fonts --ur
 
 ```
 scanning 20 page(s) for Noto Sans SC, Noto Serif SC; first screen from / …
-  Noto Sans SC 400: 990 chars → noto-sans-sc-400.woff2 269 KB + noto-sans-sc-400-top.woff2 45 KB (151 first-screen chars)
+  Noto Sans SC 400: 990 chars → noto-sans-sc-400.woff2 269 KB
+                   + noto-sans-sc-400-top.woff2 45 KB (151 first-screen chars)
   Noto Sans SC 500: 379 chars → noto-sans-sc-500.woff2 140 KB
-  Noto Serif SC 300: 219 chars → noto-serif-sc-300.woff2 140 KB + noto-serif-sc-300-top.woff2 6 KB (10 first-screen chars)
-  Noto Serif SC 400: 377 chars → noto-serif-sc-400.woff2 206 KB + noto-serif-sc-400-top.woff2 11 KB (27 first-screen chars)
-done: 818 KB of fonts
+  Noto Serif SC 300: 219 chars → noto-serif-sc-300.woff2 140 KB
+                    + noto-serif-sc-300-top.woff2 6 KB (10 first-screen chars)
+  Noto Serif SC 400: 377 chars → noto-serif-sc-400.woff2 206 KB
+                    + noto-serif-sc-400-top.woff2 11 KB (27 first-screen chars)
+done: 818 KB of fonts (source: 82.0 MB), rules in ../my-site/dist/fonts/fonts.css
 ```
 
 Then replace your `@font-face` rules with the generated `fonts.css` and preload the first-screen files:

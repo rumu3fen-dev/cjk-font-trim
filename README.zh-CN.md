@@ -14,7 +14,7 @@
 
 <p align="center"><a href="README.md">English</a> · <b>简体中文</b> · <a href="README.ja.md">日本語</a></p>
 
-<p align="center"><img src="docs/hero.svg" alt="4 个字体原文件 82.0 MB，裁剪后 818 KB，先加载 62 KB" width="900"></p>
+<p align="center"><img src="docs/demo-load.gif" alt="同一个中文页面左右并排加载：完整字体 7.2 秒才换成正确的字体，裁剪后 0.2 秒" width="900"><br><sub>同一个页面，同样限速（Chrome，20 Mbps）。左边是完整的霞鹜文楷文件，17.3 MB；右边是 cjk-font-trim 的输出。加载时间是实测的，最终显示效果逐像素一致。</sub></p>
 
 ## 要解决的问题
 
@@ -25,6 +25,8 @@
 - **干脆用系统字体**：精心挑的字体，只有设计师自己的电脑上看得到。
 
 可一个页面实际显示的字通常只有几百个，整个官网加起来也常常不到两千个。
+
+<p align="center"><img src="docs/hero.svg" alt="4 个字体原文件 82.0 MB，裁剪后 818 KB，先加载 62 KB" width="900"></p>
 
 ## 它做什么
 
@@ -58,6 +60,10 @@ npm install                        # Playwright
 npx playwright install chromium    # 或者加 --chrome 用本机装的 Google Chrome
 ```
 
+可以先拿自带的单页[示例](example/)试一下：
+
+<p align="center"><img src="docs/demo-cli.gif" alt="终端：cjk-font-trim 把 52.3 MB 的霞鹜文楷裁成示例页面要用的 84 KB" width="820"></p>
+
 先打包网站，再把输出目录和字体原文件交给它：
 
 ```bash
@@ -69,11 +75,14 @@ python3 cjk_font_trim.py --site ../my-site/dist --out ../my-site/dist/fonts --ur
 
 ```
 scanning 20 page(s) for Noto Sans SC, Noto Serif SC; first screen from / …
-  Noto Sans SC 400: 990 chars → noto-sans-sc-400.woff2 269 KB + noto-sans-sc-400-top.woff2 45 KB (151 first-screen chars)
+  Noto Sans SC 400: 990 chars → noto-sans-sc-400.woff2 269 KB
+                   + noto-sans-sc-400-top.woff2 45 KB (151 first-screen chars)
   Noto Sans SC 500: 379 chars → noto-sans-sc-500.woff2 140 KB
-  Noto Serif SC 300: 219 chars → noto-serif-sc-300.woff2 140 KB + noto-serif-sc-300-top.woff2 6 KB (10 first-screen chars)
-  Noto Serif SC 400: 377 chars → noto-serif-sc-400.woff2 206 KB + noto-serif-sc-400-top.woff2 11 KB (27 first-screen chars)
-done: 818 KB of fonts
+  Noto Serif SC 300: 219 chars → noto-serif-sc-300.woff2 140 KB
+                    + noto-serif-sc-300-top.woff2 6 KB (10 first-screen chars)
+  Noto Serif SC 400: 377 chars → noto-serif-sc-400.woff2 206 KB
+                    + noto-serif-sc-400-top.woff2 11 KB (27 first-screen chars)
+done: 818 KB of fonts (source: 82.0 MB), rules in ../my-site/dist/fonts/fonts.css
 ```
 
 然后用生成的 `fonts.css` 换掉原来的 `@font-face`，并预加载首屏文件：
